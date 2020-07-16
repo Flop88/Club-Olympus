@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 
+import ru.mvlikhachev.clubolympus.Data.ClubOlympusContract.MemberEntry;
+
 public class AddMemberActivity extends AppCompatActivity {
 
     private EditText firstNameEditText;
@@ -48,11 +50,11 @@ public class AddMemberActivity extends AppCompatActivity {
                 String selectedGender = (String) parent.getItemAtPosition(position);
                 if(!TextUtils.isEmpty(selectedGender)){
                     if (selectedGender.equals("Male")){
-                        gender = 1;
+                        gender = MemberEntry.GENDER_MALE;
                     } else if(selectedGender.equals("Female")) {
-                        gender = 2;
+                        gender = MemberEntry.GENDER_FEMALE;
                     } else {
-                        gender = 0;
+                        gender = MemberEntry.GENDER;
                     }
                 }
             }
