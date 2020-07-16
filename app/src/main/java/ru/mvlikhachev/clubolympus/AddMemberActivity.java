@@ -1,6 +1,7 @@
 package ru.mvlikhachev.clubolympus;
 
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -14,6 +15,8 @@ public class AddMemberActivity extends AppCompatActivity {
     private Spinner genderSpinner;
     private int gender = 0;
 
+    private ArrayAdapter spinnerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,11 @@ public class AddMemberActivity extends AppCompatActivity {
         genderSpinner = findViewById(R.id.genderSpinner);
 
 
+
+        spinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.array_gender, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        genderSpinner.setAdapter(spinnerAdapter);
 
     }
 }
