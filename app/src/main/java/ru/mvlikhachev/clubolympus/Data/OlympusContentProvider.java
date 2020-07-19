@@ -126,6 +126,16 @@ public class OlympusContentProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        return null;
+        int match = uriMatcher.match(uri);
+
+        switch (match) {
+            case MEMBERS:
+
+                return MemberEntry.CONTENT_MULTIPLE_ITEMS;
+            case MEMBER_ID:
+                return MemberEntry.CONTENT_SINGLE_ITEM;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
     }
 }
