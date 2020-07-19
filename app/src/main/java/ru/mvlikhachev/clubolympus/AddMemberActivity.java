@@ -52,6 +52,7 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
 
         if (currentMemberUri == null) {
             setTitle("Add a Member");
+            invalidateOptionsMenu();
         } else {
             setTitle("Edit the Member");
             getSupportLoaderManager().initLoader(EDIT_MEMBER_LOADER,
@@ -91,6 +92,16 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
             }
         });
 
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+            if (currentMemberUri == null) {
+                MenuItem menuItem = menu.findItem(R.id.delete_member);
+                menuItem.setVisible(false);
+            }
+        return true;
     }
 
     @Override
