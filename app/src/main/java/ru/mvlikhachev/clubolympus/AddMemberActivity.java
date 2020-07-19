@@ -96,7 +96,7 @@ public class AddMemberActivity extends AppCompatActivity {
         String firstName = firstNameEditText.getText().toString().trim();
         String lastName = lastNameEditText.getText().toString().trim();
         String sport = groupEditText.getText().toString().trim();
-        
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(MemberEntry.COLUMN_FIRSTNAME, firstName);
         contentValues.put(MemberEntry.COLUMN_LASTNAME, lastName);
@@ -104,8 +104,9 @@ public class AddMemberActivity extends AppCompatActivity {
         contentValues.put(MemberEntry.COLUMN_GENDER, gender);
 
         ContentResolver contentResolver = getContentResolver();
-        Uri uri = contentResolver.insert(MemberEntry.CONTENT_URI, contentValues);
-        
+        Uri uri = contentResolver.insert(MemberEntry.CONTENT_URI,
+                contentValues);
+
         if (uri == null) {
             Toast.makeText(this, "Insertion of data in the dable failed", Toast.LENGTH_LONG).show();
         } else {

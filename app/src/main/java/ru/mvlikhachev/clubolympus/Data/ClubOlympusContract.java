@@ -13,7 +13,7 @@ public final class ClubOlympusContract {
 
     // FOR URI
     public static final String SCHEME = "content://";
-    public static final String AUTHORITY = "ru.mvlikhachev.clubolympuss";
+    public static final String AUTHORITY = "ru.mvlikhachev.clubolympus";
     public static final String PATH_MEMBERS = "members";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse(SCHEME+AUTHORITY);
