@@ -99,7 +99,7 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_member:
-                insertMember();
+                saveMember();
                 return true;
             case R.id.delete_member:
                 return true;
@@ -111,7 +111,7 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
         return super.onOptionsItemSelected(item);
     }
 
-    private void insertMember() {
+    private void saveMember() {
         String firstName = firstNameEditText.getText().toString().trim();
         String lastName = lastNameEditText.getText().toString().trim();
         String sport = groupEditText.getText().toString().trim();
@@ -122,14 +122,25 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
         contentValues.put(MemberEntry.COLUMN_SPORT, sport);
         contentValues.put(MemberEntry.COLUMN_GENDER, gender);
 
-        ContentResolver contentResolver = getContentResolver();
-        Uri uri = contentResolver.insert(MemberEntry.CONTENT_URI,
-                contentValues);
+        if (currentMemberUri == null) { // Если currentMemberUri равен null - добавляем нового пользователя в БД
+            ContentResolver contentResolver = getContentResolver();
+            Uri uri = contentResolver.insert(MemberEntry.CONTENT_URI,
+                    contentValues);
 
-        if (uri == null) {
-            Toast.makeText(this, "Insertion of data in the dable failed", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "Data saved", Toast.LENGTH_LONG).show();
+            if (uri == null) {
+                Toast.makeText(this, "Insertion of data in the table failed",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Data saved", Toast.LENGTH_LONG).show();
+            }
+        } else { // В противном случае - сохраняем изменения для выбранного пользователя
+            int rowsChanged = getContentResolver().update(currentMemberUri, contentValues, null, null);
+            if (rowsChanged == 0) {
+                Toast.makeText(this, "Saving of data in the table failed",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Member updated", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
