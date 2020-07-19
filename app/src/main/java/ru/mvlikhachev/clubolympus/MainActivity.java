@@ -6,13 +6,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import ru.mvlikhachev.clubolympus.Data.ClubOlympusContract.MemberEntry;
 
-public class MainActivity extends AppCompatActivity {
+
+
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
 
     ListView dataListView;
 
@@ -58,5 +64,21 @@ public class MainActivity extends AppCompatActivity {
 
         MembersCursorAdapter cursorAdapter = new MembersCursorAdapter(this, cursor, false);
         dataListView.setAdapter(cursorAdapter);
+    }
+
+    @NonNull
+    @Override
+    public Loader onCreateLoader(int id, @Nullable Bundle args) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader loader, Object data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader loader) {
+
     }
 }
