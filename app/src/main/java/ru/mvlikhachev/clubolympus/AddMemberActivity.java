@@ -1,5 +1,8 @@
 package ru.mvlikhachev.clubolympus;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -9,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -76,6 +80,7 @@ public class AddMemberActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_member:
+                insertMember();
                 return true;
             case R.id.delete_member:
                 return true;
@@ -85,5 +90,26 @@ public class AddMemberActivity extends AppCompatActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void insertMember() {
+        String firstName = firstNameEditText.getText().toString().trim();
+        String lastName = lastNameEditText.getText().toString().trim();
+        String sport = groupEditText.getText().toString().trim();
+        
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MemberEntry.COLUMN_FIRSTNAME, firstName);
+        contentValues.put(MemberEntry.COLUMN_LASTNAME, lastName);
+        contentValues.put(MemberEntry.COLUMN_SPORT, sport);
+        contentValues.put(MemberEntry.COLUMN_GENDER, gender);
+
+        ContentResolver contentResolver = getContentResolver();
+        Uri uri = contentResolver.insert(MemberEntry.CONTENT_URI, contentValues);
+        
+        if (uri == null) {
+            Toast.makeText(this, "Insertion of data in the dable failed", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Data saved", Toast.LENGTH_LONG).show();
+        }
     }
 }
