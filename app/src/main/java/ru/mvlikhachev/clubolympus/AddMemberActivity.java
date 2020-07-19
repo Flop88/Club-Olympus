@@ -2,6 +2,7 @@ package ru.mvlikhachev.clubolympus;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 import androidx.loader.app.LoaderManager;
@@ -104,6 +106,7 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
                 saveMember();
                 return true;
             case R.id.delete_member:
+                showDeleteMemberDialog();
                 return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
@@ -156,6 +159,7 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
             }
         } else { // В противном случае - сохраняем изменения для выбранного пользователя
             int rowsChanged = getContentResolver().update(currentMemberUri, contentValues, null, null);
+
             if (rowsChanged == 0) {
                 Toast.makeText(this, "Saving of data in the table failed",
                         Toast.LENGTH_LONG).show();
@@ -221,6 +225,44 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
+    }
+    private void showDeleteMemberDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("Do you want delete the member?");
+        builder.setPositiveButton("Delete",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteMemeber();
+                    }
+                });
+        builder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                    }
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void deleteMemeber(){
+        if (currentMemberUri != null) {
+            int rowsDeleted = getContentResolver().delete(currentMemberUri, null, null);
+            if(rowsDeleted == 0) {
+                Toast.makeText(this, "Deleting of data from the table failed",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Member is deleted",
+                        Toast.LENGTH_LONG).show();
+            }
+            finish();
+        }
 
     }
 }
