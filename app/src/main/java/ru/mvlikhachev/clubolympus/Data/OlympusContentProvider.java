@@ -59,6 +59,8 @@ public class OlympusContentProvider extends ContentProvider {
                 Toast.makeText(getContext(), "Incorrect URI", Toast.LENGTH_SHORT).show();
                 throw new IllegalArgumentException("Can't query incorrect URI " + uri);
         }
+
+        cursor.setNotificationUri(getContext().getContentResolver(),uri);
         return cursor;
 
     }
@@ -98,6 +100,9 @@ public class OlympusContentProvider extends ContentProvider {
                     Log.e("insertMethod", "Insertion of data in the dable failed for " + uri);
                     return null;
                 }
+
+                getContext().getContentResolver().notifyChange(uri, null);
+
                 return ContentUris.withAppendedId(uri, id);
             default:
                 throw new IllegalArgumentException("Insertion of data in the dable failed for " + uri);
@@ -110,19 +115,26 @@ public class OlympusContentProvider extends ContentProvider {
         SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
 
         int match = uriMatcher.match(uri);
+        int rowsDeleted;
 
         switch (match) {
             case MEMBERS:
 
-                return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             case MEMBER_ID:
                 selection = MemberEntry._ID + "=?";
                 selectionArgs = new String[] {String.valueOf(ContentUris.parseId(uri))};
 
-                return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Can't delete  this URI " + uri);
         }
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
     @Override
@@ -160,19 +172,25 @@ public class OlympusContentProvider extends ContentProvider {
 
         SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
         int match = uriMatcher.match(uri);
+        int rowsUpdated;
 
         switch (match) {
             case MEMBERS:
-
-                return db.update(MemberEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(MemberEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
             case MEMBER_ID:
                 selection = MemberEntry._ID + "=?";
                 selectionArgs = new String[] {String.valueOf(ContentUris.parseId(uri))};
 
-                return db.update(MemberEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(MemberEntry.TABLE_NAME, values, selection, selectionArgs);
+                   break;
             default:
                 throw new IllegalArgumentException("Can't update  this URI " + uri);
         }
+        if (rowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+        return rowsUpdated;
     }
 
     @Override

@@ -47,32 +47,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getSupportLoaderManager().initLoader(MEMBER_LOADER,null, this);
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        displayData();
-//    }
-
-//    private void displayData() {
-//        String[] projection = {
-//                MemberEntry._ID,
-//                MemberEntry.COLUMN_FIRSTNAME,
-//                MemberEntry.COLUMN_LASTNAME,
-//                MemberEntry.COLUMN_GENDER,
-//                MemberEntry.COLUMN_SPORT,
-//        };
-//        Cursor cursor = getContentResolver().query(
-//                MemberEntry.CONTENT_URI,
-//                projection,
-//                null,
-//                null,
-//                null
-//        );
-//
-//        MembersCursorAdapter cursorAdapter = new MembersCursorAdapter(this, cursor, false);
-//        dataListView.setAdapter(cursorAdapter);
-//    }
-
     @NonNull
     @Override
     public Loader onCreateLoader(int id, @Nullable Bundle args) {
