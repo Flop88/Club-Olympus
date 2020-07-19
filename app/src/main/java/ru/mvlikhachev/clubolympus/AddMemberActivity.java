@@ -2,6 +2,8 @@ package ru.mvlikhachev.clubolympus;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,12 +17,19 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 
 import ru.mvlikhachev.clubolympus.Data.ClubOlympusContract.MemberEntry;
 
-public class AddMemberActivity extends AppCompatActivity {
+public class AddMemberActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>  {
+
+    public static final int EDIT_MEMBER_LOADER = 111;
+    Uri currentMemberUri;
 
     private EditText firstNameEditText;
     private EditText lastNameEditText;
@@ -30,11 +39,20 @@ public class AddMemberActivity extends AppCompatActivity {
 
     private ArrayAdapter spinnerAdapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_member);
+
+        Intent intent = getIntent();
+
+        currentMemberUri = intent.getData();
+
+        if (currentMemberUri == null) {
+            setTitle("Add a Member");
+        } else {
+            setTitle("Edit the Member");
+        }
 
         firstNameEditText = findViewById(R.id.firstNameEditText);
         lastNameEditText = findViewById(R.id.lastNameEditText);
@@ -68,6 +86,7 @@ public class AddMemberActivity extends AppCompatActivity {
                 gender = 0;
             }
         });
+        getSupportLoaderManager().initLoader(EDIT_MEMBER_LOADER,null, this);
     }
 
     @Override
@@ -112,5 +131,64 @@ public class AddMemberActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Data saved", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+
+        String[] projection = {
+                MemberEntry._ID,
+                MemberEntry.COLUMN_FIRSTNAME,
+                MemberEntry.COLUMN_LASTNAME,
+                MemberEntry.COLUMN_GENDER,
+                MemberEntry.COLUMN_SPORT
+        };
+        return new CursorLoader(this,
+                currentMemberUri,
+                projection,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        if (data.moveToFirst()) {
+            int firstNameColumnIndex = data.getColumnIndex(
+                    MemberEntry.COLUMN_FIRSTNAME );
+            int lastNameColumnIndex = data.getColumnIndex(
+                    MemberEntry.COLUMN_LASTNAME );
+            int genderColumnIndex = data.getColumnIndex(
+                    MemberEntry.COLUMN_GENDER );
+            int sportColumnIndex = data.getColumnIndex(
+                    MemberEntry.COLUMN_SPORT );
+
+            String firstName = data.getString(firstNameColumnIndex);
+            String lastName = data.getString(lastNameColumnIndex);
+            int gender = data.getInt(genderColumnIndex);
+            String sport = data.getString(sportColumnIndex);
+
+            firstNameEditText.setText(firstName);
+            lastNameEditText.setText(lastName);
+            groupEditText.setText(sport);
+
+            switch (gender) {
+                case MemberEntry.GENDER_MALE:
+                    genderSpinner.setSelection(1);
+                    break;
+                case MemberEntry.GENDER_FEMALE:
+                    genderSpinner.setSelection(2);
+                    break;
+                case MemberEntry.GENDER:
+                        genderSpinner.setSelection(0);
+                        break;
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
     }
 }

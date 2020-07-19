@@ -1,9 +1,12 @@
 package ru.mvlikhachev.clubolympus;
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +22,7 @@ import ru.mvlikhachev.clubolympus.Data.ClubOlympusContract.MemberEntry;
 
 
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int MEMBER_LOADER = 123;
     MembersCursorAdapter membersCursorAdapter;
@@ -44,6 +47,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         membersCursorAdapter = new MembersCursorAdapter(this, null, false);
         dataListView.setAdapter(membersCursorAdapter);
+
+        dataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, AddMemberActivity.class);
+
+                Uri currentMemberUri = ContentUris
+                        .withAppendedId(MemberEntry.CONTENT_URI, id);
+                intent.setData(currentMemberUri);
+                startActivity(intent);
+            }
+        });
+
         getSupportLoaderManager().initLoader(MEMBER_LOADER,null, this);
     }
 
@@ -69,10 +85,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(@NonNull Loader loader, Object data) {
-
-        membersCursorAdapter.swapCursor((Cursor) data);
-
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        membersCursorAdapter.swapCursor(data);
     }
 
     @Override
