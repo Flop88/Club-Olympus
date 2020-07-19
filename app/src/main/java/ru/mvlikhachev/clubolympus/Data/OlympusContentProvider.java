@@ -1,10 +1,15 @@
 package ru.mvlikhachev.clubolympus.Data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.widget.Toast;
+
+import ru.mvlikhachev.clubolympus.Data.ClubOlympusContract.*;
 
 
 public class OlympusContentProvider extends ContentProvider {
@@ -32,7 +37,28 @@ public class OlympusContentProvider extends ContentProvider {
     @Override
     public Cursor query( Uri uri, String[] projection, String selection,
                          String[] selectionArgs, String sortOrder) {
-        return null;
+
+        SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+        Cursor cursor;
+        int match = uriMatcher.match(uri);
+
+        switch (match) {
+            case MEMBERS:
+                cursor = db.query(MemberEntry.TABLE_NAME, projection, selection,
+                        selectionArgs, null, null, sortOrder);
+                break;
+            case MEMBER_ID:
+                selection = MemberEntry._ID + "=?";
+                selectionArgs = new String[] {String.valueOf(ContentUris.parseId(uri))};
+                cursor = db.query(MemberEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null,null, sortOrder);
+                break;
+            default:
+                Toast.makeText(getContext(), "Incorrect URI", Toast.LENGTH_SHORT).show();
+                throw new IllegalArgumentException("Can't query incorrect URI " + uri);
+        }
+        return cursor;
+
     }
 
     @Override
