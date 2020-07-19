@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import ru.mvlikhachev.clubolympus.Data.ClubOlympusContract.*;
@@ -63,7 +64,22 @@ public class OlympusContentProvider extends ContentProvider {
 
     @Override
     public Uri insert( Uri uri, ContentValues values) {
-        return null;
+
+        SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+
+        int match  = uriMatcher.match(uri);
+
+        switch (match) {
+            case MEMBERS:
+                long id = db.insert(MemberEntry.TABLE_NAME, null, values);
+                if (id == -1) {
+                    Log.e("insertMethod", "Insertion of data in the dable failed for " + uri);
+                    return null;
+                }
+                return ContentUris.withAppendedId(uri, id);
+            default:
+                throw new IllegalArgumentException("Insertion of data in the dable failed for " + uri);
+        }
     }
 
     @Override
